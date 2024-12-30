@@ -19,3 +19,6 @@ This project demonstrates basic data cleaning, manipulation, and export techniqu
 1. Clone this repository to your local machine.
 2. Install the necessary R packages: `writexl`, `dplyr`, `openxlsx`, `readxl`.
 3. Run the R script to perform data cleaning and export operations.
+
+## Output
+- The repository includes a PDF file that demonstrates the results of running the code, showcasing the data transformations.
