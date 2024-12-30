@@ -1,15 +1,18 @@
 ---
-title: "Basic Data cleaning and export"
+title: "**Basic Data cleaning and export**"
 author: "Anuradha Vyas"
+toc: true
 date: "2024-01-18"
-output: html_document
+output:
+  pdf_document: default
+  pdf: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Load required packages
+# 1. Load required packages
 ```{r, warning=FALSE, message= FALSE}
 library(writexl) #to export excel sheet
 library(dplyr)
@@ -17,7 +20,7 @@ library(openxlsx)
 library(readxl) #to read excel
 ```
 
-# Create and Print Dataset
+# 2. Create and Print Dataset
 ```{r}
 Original_Data <- data.frame(
   A = c(1, 2, 3, 4, 5),
@@ -31,13 +34,13 @@ Original_Data <- data.frame(
 print(Original_Data)
 ```
 
-# Export Data to Excel
+# 3. Export Data to Excel
 ```{r}
 File_path <- "C:/Users/smile/Desktop/Original_data_1.xlsx"
 write_xlsx(Original_Data, File_path)
 ```
 
-# Rename Columns
+# 4. Rename Columns
 ```{r}
 Original_Data_rename <- rename(Original_Data, id = A, color = B, 
                         age = C, T_F = D, 
@@ -45,15 +48,14 @@ Original_Data_rename <- rename(Original_Data, id = A, color = B,
 Original_Data_rename
 ```
 
-# Count Data by Category
-
+# 5.Count Data by Category
 ```{r}
 count(Original_Data_rename, id) #id is not converted to categorical
 count(Original_Data_rename, T_F)  # Count the occurrences of 'T_F'
 count(Original_Data_rename, T_F, color) # Count the occurrences of unique combinations of 'T_F' and 'color'
 ```
 
-# Simplify Color Column
+# 6. Simplify Color Column
 ```{r}
 
 Original_Data_rename <- mutate(Original_Data_rename, color.simplified = case_when(
@@ -66,7 +68,7 @@ Original_Data_rename <- mutate(Original_Data_rename, color.simplified = case_whe
 select(Original_Data_rename, c(color, color.simplified))
 ```
 
-# Calculate Mean and SD by Group
+# 7. Calculate Mean and SD by Group
 ```{r}
 Original_Data_rename
 
@@ -81,7 +83,7 @@ Original_Data_rename |>
 ```
 
 
-# Add New Data to Excel file
+# 8. Add New Data to Excel file
 ```{r}
 #create new data
 New_data <- Original_Data |>select(A, B, C)
@@ -94,7 +96,7 @@ writeData(WB, sheet = "New_data", x = New_data)
 ```
 
 
-# Add Additional Data to new sheet in same excel file
+# 9. Add Additional Data to new sheet in same excel file
 ```{r}
 #create new data 2
 Additional_data <- Original_Data |>select(A, D, E)
@@ -109,13 +111,13 @@ writeData(WB, sheet = "Additional_data", x = Additional_data)
 saveWorkbook(WB, File_path, overwrite = TRUE)
 ```
 
-# Remove Columns and Combine Data
+# 10. Remove Columns and Combine Data
 ```{r}
 New_data_remove <- Original_Data |>select(-A, -B,-C)
 print(New_data_remove)
 ```
 
-#Edit Data and Save to new sheet in same excel file
+# 11. Edit Data and Save to new sheet in same excel file
 ```{r}
 # Add the new_data to a new sheet in the existing workbook
 
@@ -141,7 +143,7 @@ saveWorkbook(WB, File_path, overwrite = TRUE)
 ```
 
 
-#Read Data from different Sheets in same excel file
+# 12. Read Data from different Sheets in same excel file
 
 ```{r}
 #read data sheet 1
