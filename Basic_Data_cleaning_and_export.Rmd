@@ -1,0 +1,164 @@
+---
+title: "Basic Data cleaning and export"
+author: "Anuradha Vyas"
+date: "2024-01-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load required packages
+```{r, warning=FALSE, message= FALSE}
+library(writexl) #to export excel sheet
+library(dplyr)
+library(openxlsx)
+library(readxl) #to read excel
+```
+
+# Create and Print Dataset
+```{r}
+Original_Data <- data.frame(
+  A = c(1, 2, 3, 4, 5),
+  B = c("Red", "Blue", "Green", "Yellow", "Red"),
+  C = c(10.5, 15.2, 8.7, 12.0, 9.3),
+  D = c(TRUE, FALSE, TRUE, FALSE, TRUE),
+  E = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+)
+
+# Print the new dataset
+print(Original_Data)
+```
+
+# Export Data to Excel
+```{r}
+File_path <- "C:/Users/smile/Desktop/Original_data_1.xlsx"
+write_xlsx(Original_Data, File_path)
+```
+
+# Rename Columns
+```{r}
+Original_Data_rename <- rename(Original_Data, id = A, color = B, 
+                        age = C, T_F = D, 
+                        Days = E)
+Original_Data_rename
+```
+
+# Count Data by Category
+
+```{r}
+count(Original_Data_rename, id) #id is not converted to categorical
+count(Original_Data_rename, T_F)  # Count the occurrences of 'T_F'
+count(Original_Data_rename, T_F, color) # Count the occurrences of unique combinations of 'T_F' and 'color'
+```
+
+# Simplify Color Column
+```{r}
+
+Original_Data_rename <- mutate(Original_Data_rename, color.simplified = case_when(
+  color == "Red" ~ "1",
+  color == "Blue" ~ "2",
+  color == "Green" ~ "3",
+  color == "Yellow" ~ "4"
+))
+
+select(Original_Data_rename, c(color, color.simplified))
+```
+
+# Calculate Mean and SD by Group
+```{r}
+Original_Data_rename
+
+Original_Data_rename |> 
+    mutate(midschool.school.complete = case_when(
+      age< 11 ~ "No_midschool",
+      age >11 ~ "Midschool")) |> 
+    group_by(midschool.school.complete) |> 
+    summarize(age.mean = mean(age), age.sd= sd(age))
+
+#count(Original_Data_rename, midschool.school.complete)
+```
+
+
+# Add New Data to Excel file
+```{r}
+#create new data
+New_data <- Original_Data |>select(A, B, C)
+print(New_data)
+# Load the existing workbook
+WB <- loadWorkbook(File_path)
+
+addWorksheet(WB, sheetName = "New_data")
+writeData(WB, sheet = "New_data", x = New_data)
+```
+
+
+# Add Additional Data to new sheet in same excel file
+```{r}
+#create new data 2
+Additional_data <- Original_Data |>select(A, D, E)
+print(Additional_data)
+
+
+# Add the new_data to a new sheet in the existing workbook
+addWorksheet(WB, sheetName = "Additional_data")
+writeData(WB, sheet = "Additional_data", x = Additional_data)
+
+# Save the modified workbook
+saveWorkbook(WB, File_path, overwrite = TRUE)
+```
+
+# Remove Columns and Combine Data
+```{r}
+New_data_remove <- Original_Data |>select(-A, -B,-C)
+print(New_data_remove)
+```
+
+#Edit Data and Save to new sheet in same excel file
+```{r}
+# Add the new_data to a new sheet in the existing workbook
+
+addWorksheet(WB, sheetName = "combined_data_NA")
+writeData(WB, sheet = "combined_data_NA", x = cbind(Additional_data, New_data))
+
+# Save the modified workbook
+saveWorkbook(WB, File_path, overwrite = TRUE)
+```
+
+
+
+```{r}
+Edited_data <- Original_Data[-c(3,4),]
+print(Edited_data)
+
+
+addWorksheet(WB, sheetName = "Edited_data")
+writeData(WB, sheet = "Edited_data", x = Edited_data)
+
+# Save the modified workbook
+saveWorkbook(WB, File_path, overwrite = TRUE)
+```
+
+
+#Read Data from different Sheets in same excel file
+
+```{r}
+#read data sheet 1
+New_data_1 <- read_xlsx("C:/Users/smile/Desktop/Original_data_1.xlsx", sheet ="New_data")
+print(New_data_1)
+```
+
+```{r}
+#read data sheet 2
+Additional_data_1 <- read_xlsx("C:/Users/smile/Desktop/Original_data_1.xlsx", sheet ="Additional_data")
+print(Additional_data_1)
+```
+
+
+```{r}
+#read data sheet 1
+combined_data_NA_1 <- read_xlsx("C:/Users/smile/Desktop/Original_data_1.xlsx", sheet ="combined_data_NA")
+print(combined_data_NA_1)
+```
+
