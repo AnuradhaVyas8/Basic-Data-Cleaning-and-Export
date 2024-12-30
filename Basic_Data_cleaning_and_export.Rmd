@@ -5,8 +5,9 @@ toc: true
 date: "2024-01-18"
 output:
   pdf_document: default
-  pdf: default
 ---
+
+\newpage
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
